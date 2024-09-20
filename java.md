@@ -42,7 +42,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/3.png)
+![alt text](assets/3.jpg)
 
 # 11.盛最多水的容器(mid)
 ## 题目描述
@@ -74,7 +74,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/11.png)
+![alt text](assets/11.jpg)
 
 # 23.合并 K 个升序链表(hard)
 ## 题目描述
@@ -121,7 +121,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/23.png)
+![alt text](assets/23.jpg)
 
 # 25.K 个一组翻转链表(hard)
 ## 题目描述
@@ -166,7 +166,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/25.png)
+![alt text](assets/25.jpg)
 
 # 42.接雨水(hard)
 ## 题目描述
@@ -201,7 +201,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/42.png)
+![alt text](assets/42.jpg)
 
 # 239.滑动窗口最大值(hard)
 ## 题目描述
@@ -237,7 +237,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/239.png)
+![alt text](assets/239.jpg)
 
 # 283.移动零(easy)
 ## 题目描述
@@ -266,7 +266,7 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/283.png)
+![alt text](assets/283.jpg)
 
 # 560.和为 K 的子数组(mid)
 ## 题目描述
@@ -294,4 +294,4 @@ class Solution {
 }
 ```
 ## 运行截图
-![alt text](assets/560.png)
+![alt text](assets/560.jpg)
