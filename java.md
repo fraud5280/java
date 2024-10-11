@@ -76,6 +76,69 @@ class Solution {
 ## 运行截图
 ![alt text](assets/11.jpg)
 
+# 20.有效的括号(easy)
+## 题目描述
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+## 分析
+用栈遍历判断
+## 代码
+```java
+class Solution {
+    public boolean isValid(String s) {
+        int n=s.length();
+        if(n%2 == 1)return false;
+
+        Stack<Character> sta = new Stack<>();
+        for(char c : s.toCharArray()){
+            if(c=='('){
+                sta.push(')');
+            }else if(c=='['){
+                sta.push(']');
+            }else if(c=='{'){
+                sta.push('}');
+            }else{
+                if (sta.isEmpty() || sta.pop() != c) {
+                    return false; // 栈为空或者匹配失败
+                }
+            } 
+        }
+        return sta.isEmpty();
+    }
+}
+```
+## 运行截图
+![alt text](assets/20.jpg)
+
+# 21.合并两个有序链表(easy)
+## 题目描述
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+## 分析
+迭代连接较小的节点，最后如果有剩余，直接接在后面。
+## 代码
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode head=new ListNode();
+        ListNode memo=head;
+
+        while(list1 !=null && list2 != null){
+            if(list1.val < list2.val){
+                head.next=list1;
+                list1=list1.next;
+            }else{
+                head.next=list2;
+                list2=list2.next;
+            }
+            head=head.next;
+        }
+        head.next = list1==null ? list2 : list1;
+        return memo.next;
+    }
+}
+```
+## 运行截图
+![alt text](assets/21.jpg)
+
 # 23.合并 K 个升序链表(hard)
 ## 题目描述
 给你一个链表数组，每个链表都已经按升序排列。
@@ -203,6 +266,710 @@ class Solution {
 ## 运行截图
 ![alt text](assets/42.jpg)
 
+# 46.全排列(mid)
+## 题目描述
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+## 分析
+使用回溯法
+## 代码
+```java
+class Solution {
+    private List<List<Integer>> ans=new ArrayList<List<Integer>>();
+    private List<Integer> path = new ArrayList<Integer>();
+    public List<List<Integer>> permute(int[] nums) {
+        int n=nums.length;
+        if(n==0)return ans;
+        boolean[] used=new boolean[n];
+        dfs(nums,n,used);
+        return ans;
+    }
+
+    public void dfs(int[] nums,int n,boolean[] used){
+        if(path.size()==n){
+            //ans.add(path); 添加的是path地址，而不是值
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for(int i=0;i<n;i++){
+            if(used[i]) continue;
+            used[i]=true;
+            path.add(nums[i]);
+            dfs(nums,n,used);
+            used[i]=false;
+            path.remove(path.size()-1);
+        }
+    }
+}
+```
+## 运行截图
+![alt text](assets/46.jpg)
+
+# 51.N皇后(hard)
+## 题目描述
+给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+## 分析
+使用回溯法，穷举可能。
+## 代码
+```java
+class Solution {
+    List<List<String>> ans= new ArrayList<List<String>>();
+    public List<List<String>> solveNQueens(int n) {
+        char[][] Queen=new char[n][n];
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                Queen[i][j]='.';
+            }
+        }
+        backtracking(Queen,0);
+        return ans;
+    }
+    public void backtracking(char[][] Queen,int x){
+        int n=Queen.length;
+        if(x==n){
+            List<String> cur=new ArrayList<String>();
+            for(int i=0;i<n;i++){
+                cur.add(new String(Queen[i]));
+            }
+            ans.add(cur);//
+            return;
+        }
+
+        for(int j=0;j<n;j++){
+            if(isValid(Queen,x,j)){
+                Queen[x][j]='Q';
+                backtracking(Queen,x+1);
+                Queen[x][j]='.';
+            }
+        }
+    }
+
+    public boolean isValid(char[][] Queen,int x,int y){
+        //上
+        for(int i=x-1;i>=0;i--){
+            if(Queen[i][y]=='Q'){
+                return false;
+            }
+        }
+        //左上
+        for(int i=x,j=y;i>=0&&j>=0;i--,j--){
+            if(Queen[i][j]=='Q'){
+                return false;
+            }
+        }
+        //右上
+        for(int i=x,j=y;i>=0&&j<Queen.length;i--,j++){
+            if(Queen[i][j]=='Q'){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+## 运行截图
+![alt text](assets/51.jpg)
+
+# 65.有效数字(hard)
+## 题目描述
+给定一个字符串 s ，返回 s 是否是一个 有效数字。
+## 分析
+模拟，编写代码逐个判断
+## 代码
+```java
+class Solution {
+    public boolean isNumber(String s) {
+        int n = s.length();
+        char[] cs = s.toCharArray();
+        int idx = -1;
+        for (int i = 0; i < n; i++) {
+            if (cs[i] == 'e' || cs[i] == 'E') {
+                if (idx == -1) idx = i;
+                else return false;
+            }
+        }
+        boolean ans = true;
+        if (idx != -1) {
+            ans &= check(cs, 0, idx - 1, false);
+            ans &= check(cs, idx + 1, n - 1, true);
+        } else {
+            ans &= check(cs, 0, n - 1, false);
+        }
+        return ans;
+    }
+    boolean check(char[] cs, int start, int end, boolean mustInteger) {
+        if (start > end) return false;
+        if (cs[start] == '+' || cs[start] == '-') start++;
+        boolean hasDot = false, hasNum = false;
+        for (int i = start; i <= end; i++) {
+            if (cs[i] == '.') {
+                if (mustInteger || hasDot) return false;
+                hasDot = true;
+            } else if (cs[i] >= '0' && cs[i] <= '9') {
+                hasNum = true;
+            } else {
+                return false;
+            }
+        }
+        return hasNum;
+    }
+}
+```
+## 运行截图
+![alt text](assets/65.jpg)
+
+# 76.最小覆盖子串(hard)
+## 题目描述
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+## 分析
+定义两个哈希表，分别存储模式串和当前窗口，遍历匹配串，使用滑动窗口，统计diff数值，当diff=0时说明窗口符合要求，此时窗口左侧左移来求得最小值
+## 代码
+```java
+class Solution {
+    int ans=Integer.MAX_VALUE;
+    int ansStart=0;
+    public String minWindow(String s, String t) {
+        int n=s.length(),m=t.length();
+        if(m>n)return "";
+        Map<Character, Integer> mp = new HashMap<Character, Integer>();//模式串
+        Map<Character, Integer> mp2 = new HashMap<Character, Integer>();//当前窗口
+        int differ=m;
+        for(int i=0;i<m;i++){
+            mp.put(t.charAt(i), mp.getOrDefault(t.charAt(i), 0) + 1);
+            //mp[t[i]]++;
+        }
+        int left=0;
+        for(int i=0;i<n;i++){
+            while(differ==0){
+                setAnswer(i-left,left);
+                //mp.find(s[left])!=mp.end()
+                if(mp.get(s.charAt(left)) != null){
+                    differ++;
+                    mp2.put(s.charAt(left), mp2.getOrDefault(s.charAt(left), 0) - 1);
+                    //mp2[s[left]]--;
+                    
+                    if(mp2.getOrDefault(s.charAt(left),0)>=mp.getOrDefault(s.charAt(left),0))differ--;
+                
+                }left++;
+            }
+
+            if(mp.get(s.charAt(i)) != null){//find it
+                differ--;
+                mp2.put(s.charAt(i), mp2.getOrDefault(s.charAt(i), 0) + 1);
+                //mp2[s[i]]++;
+                
+                if(mp2.getOrDefault(s.charAt(i),0)>mp.getOrDefault(s.charAt(i),0))differ++;
+            }
+
+            if(differ==0){
+                setAnswer(i-left+1,left);
+            }
+        }
+        while(differ==0){
+            setAnswer(n-left,left);
+            if(mp.get(s.charAt(left)) != null){
+                differ++;
+                mp2.put(s.charAt(left), mp2.getOrDefault(s.charAt(left), 0) - 1);
+                if(mp2.getOrDefault(s.charAt(left),0)>=mp.getOrDefault(s.charAt(left),0))differ--;
+            
+            }left++;
+        }
+        return ans==Integer.MAX_VALUE ? "" : s.substring(ansStart,ansStart+ans);
+    }
+    public void setAnswer(int len,int start){
+        if(this.ans>len){
+            this.ans=len;
+            this.ansStart=start;
+        }
+    }
+}
+```
+## 运行截图
+![alt text](assets/76.jpg)
+
+# 84. 柱状图中最大的矩形(hard)
+## 题目描述
+给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+## 分析
+利用单调栈，找出每个格子右侧第一个小于他的下表，记录下来。左侧一样。最后求结果。
+## 代码
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int n=heights.length;
+        Stack<Integer> stk1 = new Stack<>();
+        int[] vec1 = new int[n];
+        Arrays.fill(vec1,n);//无穷远在第n位
+        for(int i=0;i<n;i++){
+            while(!stk1.isEmpty()&&heights[stk1.peek()]>heights[i]){
+                vec1[stk1.pop()]=i;
+            }
+            stk1.push(i);
+        }
+        Stack<Integer> stk2 = new Stack<>();
+        int[] vec2 = new int[n];
+        Arrays.fill(vec2,-1);
+        for(int i=n-1;i>=0;i--){
+            while(!stk2.isEmpty()&&heights[stk2.peek()]>heights[i]){
+                vec2[stk2.pop()]=i;
+            }
+            stk2.push(i);
+        }
+        int ans=0;
+        for(int i=0;i<n;i++){
+            int now=((vec1[i]-1) - (vec2[i]+1) +1)*heights[i];
+            ans=Math.max(ans,now);
+        }
+        return ans;
+    }
+}
+```
+## 运行截图
+![alt text](assets/84.jpg)
+
+# 101. 对称二叉树(easy)
+## 题目描述
+给你一个二叉树的根节点 root ， 检查它是否轴对称。
+## 分析
+判断是否镜像对称，首先判断它们的两个根结点具有相同的值，其次判断每个树的右子树都与另一个树的左子树镜像对称。递归求解。
+## 代码
+```java
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null)return true;
+        return func(root.left,root.right);
+    }
+    public boolean func(TreeNode left, TreeNode right){
+        if(left==null && right == null)return true;
+        if(left==null || right==null)return false;
+        if(left.val != right.val)return false;
+        return func(left.left,right.right) && func(left.right,right.left);
+    }
+}
+```
+## 运行截图
+![alt text](assets/101.jpg)
+
+# 115. 不同的子序列(hard)
+## 题目描述
+给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数，结果需要对 109 + 7 取模。
+## 分析
+二维动态规划，如果s[i]==t[j],可以选s[i]也可以不选。
+## 代码
+```java
+class Solution {
+    public int numDistinct(String s, String t) {
+        int n1=s.length(),n2=t.length();
+        int mod=1000000007;
+        int[][] dp= new int[n1+1][n2+1];
+        for(int i=0;i<=n1;i++){
+            dp[i][0]=1;
+        }
+        for(int i=0;i<n1;i++){
+            for(int j=0;j<n2;j++){
+                 if(s.charAt(i)==t.charAt(j)){
+                     dp[i+1][j+1]=(dp[i][j]+dp[i][j+1])%mod;
+                     //dp[i][j+1] 不考虑s中这个字符
+                 }else{
+                     dp[i+1][j+1]=dp[i][j+1];
+                 }
+            }
+        }
+        return dp[n1][n2];
+    }
+}
+```
+## 运行截图
+![alt text](assets/115.jpg)
+
+# 121. 买卖股票的最佳时机(easy)
+## 题目描述
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+## 分析
+记录遇到的最低值，遍历数组，每次计算当前与最低值的差。
+## 代码
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int cost=Integer.MAX_VALUE;
+        int ans=0;
+        for(int i=0;i<prices.length;i++){
+            if(cost>prices[i]){
+                cost=prices[i];
+            }
+            ans=Math.max(ans,prices[i]-cost);
+        }
+        return ans;
+    }
+}
+```
+## 运行截图
+![alt text](assets/121.jpg)
+
+# 122. 买卖股票的最佳时机II(mid)
+## 题目描述
+给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。
+在每一天，你可以决定是否购买和/或出售股票。你在任何时候 最多 只能持有 一股 股票。你也可以先购买，然后在 同一天 出售。
+返回 你能获得的 最大 利润 。
+## 分析
+动态规划，每天的状态分为持有和不持有股票，遍历，最后答案便是最后一天不持有股票。
+## 代码
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n=prices.length;
+        int[][] dp=new int[n][2];
+        //0 for 不持有；1 for 持有
+        dp[0][0]=0;
+        dp[0][1]=-prices[0];
+        for(int i=1;i<n;i++){
+            dp[i][0]=Math.max(dp[i-1][0],dp[i-1][1]+prices[i]);
+            dp[i][1]=Math.max(dp[i-1][0]-prices[i],dp[i-1][1]);
+        }
+        return dp[n-1][0];
+    }
+}
+```
+## 运行截图
+![alt text](assets/122.jpg)
+
+# 123. 买卖股票的最佳时机III(hard)
+## 题目描述
+给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+## 分析
+动态规划，每天的状态分为1第一次持有 2第一次不持有 3第二次持有 4第二次不持有,遍历数组更新。
+## 代码
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n=prices.length;
+        int[][] dp=new int[n][5];
+        //0不操作(可省略) 1第一次持有 2第一次不持有 3第二次持有 4第二次不持有
+        dp[0][0]=dp[0][2]=dp[0][4]=0;
+        dp[0][1]=dp[0][3]=-prices[0];
+
+        for(int i=1;i<n;i++){
+            //dp[i][0]=dp[i-1][0];
+            dp[i][1]=Math.max(dp[i-1][1],0-prices[i]);
+            dp[i][2]=Math.max(dp[i-1][2],dp[i-1][1]+prices[i]);
+            dp[i][3]=Math.max(dp[i-1][3],dp[i-1][2]-prices[i]);
+            dp[i][4]=Math.max(dp[i-1][4],dp[i-1][3]+prices[i]);
+
+        }
+        return dp[n-1][4];
+    }
+}
+```
+## 运行截图
+![alt text](assets/123.jpg)
+
+# 124. 二叉树中的最大路径和(hard)
+## 题目描述
+二叉树中的 路径 被定义为一条节点序列，序列中每对相邻节点之间都存在一条边。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。路径和 是路径中各节点值的总和。
+给你一个二叉树的根节点 root ，返回其 最大路径和 。
+## 分析
+递归，找到每一个节点的左右最大路径和。
+## 代码
+```java
+class Solution {
+    private int ans=Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        func(root);
+        return ans;
+    }
+    public int func(TreeNode root){
+        if(root==null)return 0;
+        int left=Math.max(func(root.left),0);
+        int right=Math.max(func(root.right),0);
+        ans=Math.max(ans,root.val+left+right);
+        return root.val+Math.max(left,right);
+    }
+}
+```
+## 运行截图
+![alt text](assets/124.jpg)
+
+# 127. 单词接龙(hard)
+## 题目描述
+给你两个单词 beginWord 和 endWord 和一个字典 wordList ，返回 从 beginWord 到 endWord 的 最短转换序列 中的 单词数目 。如果不存在这样的转换序列，返回 0 。
+## 分析
+广度优先搜索，建立图的模型。
+## 代码
+```java
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        int n=wordList.size();
+        int count=1;
+        //mp 存路径前一个单词
+        Set<String> visited = new HashSet<>();
+        //Map<String,String> mp = new HashMap<String,String>();
+        Queue<String> q= new LinkedList<String>();
+        q.offer(beginWord);
+        //mp.put(beginWord,beginWord);
+        visited.add(beginWord);
+        while(!q.isEmpty()){
+            int m=q.size();
+            for(int k=0;k<m;k++){
+                String now=q.poll();
+                if(now.equals(endWord)){
+                    return count;
+                }
+                for(int i=0;i<n;i++){
+                    String curStr=wordList.get(i);
+                    if(isDiffer(now,curStr) && !visited.contains(curStr)){
+                        visited.add(curStr);
+                        q.offer(curStr);
+                    }
+                }
+            }
+            count++;
+        }
+        return 0;
+    }
+    public boolean isDiffer(String a,String b){
+        int ans=0;
+        for(int i=0;i<a.length();i++){
+            if(a.charAt(i)!=b.charAt(i))ans++;
+        }
+        return ans==1;
+    }
+}
+```
+## 运行截图
+![alt text](assets/127.jpg)
+
+# 135. 分发糖果(hard)
+## 题目描述
+n 个孩子站成一排。给你一个整数数组 ratings 表示每个孩子的评分。
+你需要按照以下要求，给这些孩子分发糖果：
+    每个孩子至少分配到 1 个糖果。
+    相邻两个孩子评分更高的孩子会获得更多的糖果。
+请你给每个孩子分发糖果，计算并返回需要准备的 最少糖果数目 。
+## 分析
+贪心算法，左右各跑一趟，如果当前孩子比前一个大，分到的糖是前一个的+1
+## 代码
+```java
+class Solution {
+    public int candy(int[] ratings) {
+        int n=ratings.length;
+        int[] ans=new int[n];
+        Arrays.fill(ans,1);
+        for(int i=1;i<n;i++){
+            if(ratings[i]>ratings[i-1]){
+                ans[i]=ans[i-1]+1;
+            }
+            
+        }
+        for(int i=n-2;i>=0;i--){
+            if(ratings[i]>ratings[i+1]){
+                ans[i]=Math.max(ans[i],ans[i+1]+1);
+            }
+        }
+        int sum=0;
+        for(int i=0;i<n;i++){
+            sum+=ans[i];
+        }
+        return sum;
+    }
+}
+```
+## 运行截图
+![alt text](assets/135.jpg)
+
+# 141. 环形链表(easy)
+## 题目描述
+给你一个链表的头节点 head ，判断链表中是否有环。
+## 分析
+使用快慢指针
+## 代码
+```java
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if(head==null)return false;
+        ListNode fast,slow=head;
+        fast=slow.next;
+        while(fast!=slow){
+            slow=slow.next;
+            if(fast != null){
+                fast=fast.next;
+            }
+            if(fast != null){
+                fast=fast.next;
+            }
+        }
+        return slow!=null;
+    }
+}
+```
+## 运行截图
+![alt text](assets/141.jpg)
+
+# 154. 寻找旋转排序数组中的最小值 II(hard)
+## 题目描述
+已知一个长度为 n 的数组，预先按照升序排列，经由 1 到 n 次 旋转 后，得到输入数组。例如，原数组 nums = [0,1,4,4,5,6,7] 在变化后可能得到：
+给你一个可能存在 重复 元素值的数组 nums ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 最小元素 。
+你必须尽可能减少整个过程的操作步骤。
+## 分析
+二分查找，对比mid和right，注意相等时选择right--以避免错过答案
+## 代码
+```java
+class Solution {
+    public int findMin(int[] nums) {
+        int n=nums.length;
+        int left=0,right=n-1;
+        while(left<right){
+            int mid=(left+right)>>1;
+            if(nums[mid]<nums[right]){//等于的时候不可以这样缩小
+                right=mid;//不能mid-1，因为mid有可能是答案
+            }else if(nums[mid]>nums[right]){
+                left=mid+1;
+            }else{
+                right--;//无法找到，那就先缩后(因为比的是后半)
+            }
+        }
+        return nums[left];
+    }
+}
+```
+## 运行截图
+![alt text](assets/154.jpg)
+
+# 188. 买卖股票的最佳时机 IV(hard)
+## 题目描述
+给你一个整数数组 prices 和一个整数 k ，其中 prices[i] 是某支给定的股票在第 i 天的价格。
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。也就是说，你最多可以买 k 次，卖 k 次。
+## 分析
+一共k次，定义n*（2k+1）的数组，分别表示k次持有、不持有，类似III的解法。
+## 代码
+```java
+class Solution {
+    public int maxProfit(int k, int[] prices) {
+        //最多k次
+        int n=prices.length;
+        int[][] dp=new int[n][2*k+1];
+        for(int i=0;i<k;i++){
+            dp[0][2*i+1]=-prices[0];
+        }
+        for(int i=1;i<n;i++){
+            for(int j=0;j<k;j++){
+                dp[i][2*j+1]=Math.max(dp[i-1][2*j+1],dp[i-1][2*j]-prices[i]);
+                dp[i][2*j+2]=Math.max(dp[i-1][2*j+2],dp[i-1][2*j+1]+prices[i]);
+            }
+        }
+        return dp[n-1][2*k];
+    }
+}
+```
+## 运行截图
+![alt text](assets/188.jpg)
+
+# 206.反转链表(easy)
+## 题目描述
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。 
+## 分析
+头插法
+## 代码
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode pre=null,p;
+        while(head != null){
+            p=head.next;
+            head.next=pre;
+            pre=head;
+            head=p;
+        }
+        return pre;
+    }
+}
+```
+## 运行截图
+![alt text](assets/206.jpg)
+
+# 208. 实现 Trie (前缀树)(mid)
+## 题目描述
+请你实现 Trie 类：
+    Trie() 初始化前缀树对象。
+    void insert(String word) 向前缀树中插入字符串 word 。
+    boolean search(String word) 如果字符串 word 在前缀树中，返回 true（即，在检索之前已经插入）；否则，返回 false 。
+    boolean startsWith(String prefix) 如果之前已经插入的字符串 word 的前缀之一为 prefix ，返回 true ；否则，返回 false 。
+## 分析
+根据字典树的定义逐步实现每个方法。注意search和startwith都调用的searchPrefix函数
+## 代码
+```java
+class Trie {
+    private Trie[] children;
+    private boolean isEnd;
+    public Trie() {
+        children = new Trie[26];
+        isEnd = false;
+    }
+    
+    public void insert(String word) {
+        Trie node=this;
+        for (int i = 0; i < word.length(); i++) {
+            char ch= word.charAt(i);
+            int index=ch-'a';
+            if(node.children[index]==null){
+                node.children[index]=new Trie();
+            }
+            node=node.children[index];
+        }
+        node.isEnd=true;
+    }
+    
+    public boolean search(String word) {
+        Trie node = searchPrefix(word);
+        return node != null && node.isEnd;
+    }
+
+    public boolean startsWith(String prefix) {
+        return searchPrefix(prefix) != null;
+    }
+
+    private Trie searchPrefix(String prefix) {
+        Trie node = this;
+        for (int i = 0; i < prefix.length(); i++) {
+            char ch= prefix.charAt(i);
+            int index=ch-'a';
+            if(node.children[index]==null)return null;
+            node=node.children[index];
+        }
+        return node;
+    }
+}
+```
+## 运行截图
+![alt text](assets/208.jpg)
+
+# 233. 数字 1 的个数(hard)
+## 题目描述
+给定一个整数 n，计算所有小于等于 n 的非负整数中数字 1 出现的个数。
+## 分析
+枚举每一数位上 1 的个数
+## 代码
+```java
+class Solution {
+public:
+    int countDigitOne(int n) {
+        long long mulk=1;
+        int ans=0;
+        for(int k=0;n>=mulk;k++){
+            int rest=n % (mulk * 10);
+            ans+= (n/(mulk*10))*mulk + fmin(mulk,fmax(0,rest-mulk+1));
+            mulk*=10;
+        }
+        return ans;
+    }
+}
+```
+## 运行截图
+![alt text](assets/233.jpg)
+
 # 239.滑动窗口最大值(hard)
 ## 题目描述
 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。返回 滑动窗口中的最大值 。
@@ -295,3 +1062,58 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/560.jpg)
+
+# 994.腐烂的橘子(mid)
+## 题目描述
+在给定的 m x n 网格 grid 中，每个单元格可以有以下三个值之一：
+    值 0 代表空单元格；
+    值 1 代表新鲜橘子；
+    值 2 代表腐烂的橘子。
+每分钟，腐烂的橘子 周围 4 个方向上相邻 的新鲜橘子都会腐烂。
+返回 直到单元格中没有新鲜橘子为止所必须经过的最小分钟数。如果不可能，返回 -1 。
+## 分析
+BFS，将腐烂的橘子存入队列，每次取一个，污染周围再加入队列，直到队列为空。记录轮次，返回时间。
+## 代码
+```java
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        int[][] dir=new int[][]{{1,0},{-1,0},{0,1},{0,-1}};
+        int m=grid.length,n=grid[0].length;
+        int nums=0,cnt=0;
+        int time=0;
+        Queue<int[]> q = new LinkedList<>();
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j]==1){
+                    nums++;
+                }else if(grid[i][j]==2){
+                    q.add(new int[]{i,j});
+                }
+            }
+        }
+        while(!q.isEmpty()){
+            int size=q.size();
+            for(int k=0;k<size;k++){
+                int[] orange=q.poll();
+                int x=orange[0];
+                int y=orange[1];
+                for(int i=0;i<4;i++){
+                    int xx=x+dir[i][0],yy=y+dir[i][1];
+                    if(xx>=m||xx<0||yy<0||yy>=n)continue;
+                    if(grid[xx][yy]==1){
+                        q.add(new int[]{xx,yy});
+                        cnt++;
+                        grid[xx][yy]=2;
+                    }
+                }
+            }
+            if(!q.isEmpty())time++;
+        }
+        if(cnt==nums){
+            return time;
+        }else return -1;
+    }
+}
+```
+## 运行截图
+![alt text](assets/994.jpg)
