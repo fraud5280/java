@@ -231,6 +231,34 @@ class Solution {
 ## 运行截图
 ![alt text](assets/25.jpg)
 
+# 27.移除元素(easy)
+## 题目描述
+给你一个数组 nums 和一个值 val，你需要**原地**移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+## 分析
+双指针，一个指向当前位置，一个指向最后一个不等于val的位置。
+## 代码
+```java
+class Solution {
+    public int removeElement(int[] nums, int val) {
+        int k = nums.length;
+        int index = 0;
+        int current = 0;
+        for(int ele: nums){
+            if(ele == val){
+                k--;
+            } else {
+                nums[index] = nums[current];
+                index++;
+            }
+            current++;
+        }
+        return k;
+    }
+}
+```
+## 运行截图
+![alt text](assets/27.png)
+
 # 42.接雨水(hard)
 ## 题目描述
 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
@@ -368,6 +396,45 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/51.jpg)
+
+# 59.螺旋矩阵II(mid)
+## 题目描述
+给定一个正整数 n，生成一个包含 1 到 n^2 所有元素，且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵。
+## 分析
+模拟，按照顺时针的方向填入数字。
+## 代码
+```java
+class Solution {
+    public int[][] generateMatrix(int n) {
+        int[][] arr = new int[n][n];
+        int layer = 0;
+        int current = 1;
+        while(layer <= n/2){
+            for(int i = layer; i < n-layer; i++){
+                arr[layer][i] = current;
+                current++;
+            };
+            for(int i = layer+1; i < n-layer; i++){
+                arr[i][n-layer-1] = current;
+                current++;
+            };
+            for(int i = n-layer-2; i >= layer; i--){
+                arr[n-layer-1][i] = current;
+                current++;
+            };
+            for(int i = n-layer-2; i >= layer+1; i--){
+                arr[i][layer] = current;
+                current++;
+            };
+            layer++;
+        }
+        return arr;
+    }
+}
+```
+## 运行截图
+![alt text](assets/59.png)
+
 
 # 65.有效数字(hard)
 ## 题目描述
@@ -1062,6 +1129,71 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/560.jpg)
+
+# 704.二分查找(easy)
+## 题目描述
+给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
+## 分析
+比较 target 与数组中间的值，如果相等则返回，如果小于中间值则将右半部分裁切留下左半部分，反之亦然，然后重复上述过程。如果最后数组为空则返回-1。
+## 代码
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length;
+        int mid;
+        while(low <= high){
+            mid = (low + high)/2;
+            if(nums[mid] == target){
+                return mid;
+            } else if (nums[mid] < target){
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return -1;
+    }
+}
+```
+## 运行截图
+![alt text](assets/704.png)
+
+# 977.有序数组的平方(easy)
+## 题目描述
+给你一个按 非递减顺序 排序的整数数组 nums，返回每个数字的平方组成的新数组，要求也按 非递减顺序 排序。
+## 分析
+双指针，分别指向数组的两端，比较两端的平方值，将较大的放入结果数组的末尾。
+## 代码
+```java
+class Solution {
+    public int[] sortedSquares(int[] nums) {
+        int[] newArr = new int[nums.length];
+        int low = 0;
+        int high = nums.length - 1;
+        int current = nums.length - 1;
+        int highSqr = -1;
+        int lowSqr = -1;
+        while(high >= low){
+            highSqr = (highSqr < 0) ? (int)Math.pow(nums[high], 2) : highSqr; // 避免重复计算
+            lowSqr = (lowSqr < 0) ? (int)Math.pow(nums[low], 2) : lowSqr; // 同上
+            if(highSqr >= lowSqr){
+                newArr[current] = highSqr;
+                highSqr = -1;
+                high--;
+            } else {
+                newArr[current] = lowSqr;
+                lowSqr = -1;
+                low++;
+            }
+            current--;
+        }
+        return newArr;
+    }
+}
+```
+## 运行截图
+![alt text](assets/977.png.png)
 
 # 994.腐烂的橘子(mid)
 ## 题目描述
