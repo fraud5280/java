@@ -76,6 +76,45 @@ class Solution {
 ## 运行截图
 ![alt text](assets/11.jpg)
 
+# 19.删除链表的倒数第 N 个结点(mid)
+## 题目描述
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+## 分析
+双指针，一个指向头结点，一个指向倒数第n个结点，然后同时移动，直到后一个指针到达末尾。
+## 代码
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        // 双指针
+        ListNode dummyNode = new ListNode(-1);
+        dummyNode.next = head;
+        ListNode pre = dummyNode;
+        ListNode after = dummyNode;
+        for(int i = 0; i < n; i++){
+            after = after.next;
+        }
+        while(after.next != null){
+            after = after.next;
+            pre = pre.next;
+        }
+        pre.next = pre.next.next;
+        return dummyNode.next;
+    }
+}
+```
+## 运行截图
+![alt text](assets/19.png)
+
 # 20.有效的括号(easy)
 ## 题目描述
 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
@@ -185,6 +224,50 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/23.jpg)
+
+# 24.两两交换链表中的节点(mid)
+## 题目描述
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+## 分析
+模拟这一过程，创建多个临时链表节点来模拟。
+## 代码
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        if(head == null || head.next == null)return head;
+        ListNode newHead = head.next;
+        ListNode pre = null;
+        ListNode cur1 = head;
+        ListNode cur2;
+        ListNode next;
+        while(cur1 != null && cur1.next != null){
+            // 交换 cur1 和 cur2
+            cur2 = cur1.next;
+            next = cur2.next;
+            if(pre != null){
+                pre.next = cur2;
+            }
+            cur2.next = cur1;
+            cur1.next = next;
+            pre = cur1;
+            cur1 = cur1.next;
+        }
+        return newHead;
+    }
+}
+```
+## 运行截图
+![alt text](assets/24.png)
 
 # 25.K 个一组翻转链表(hard)
 ## 题目描述
@@ -905,6 +988,61 @@ class Solution {
 ## 运行截图
 ![alt text](assets/154.jpg)
 
+# 160. 相交链表(easy)
+## 题目描述
+编写一个程序，找到两个单链表相交的起始节点。
+## 分析
+双指针，一个指向A链表，一个指向B链表，当一个指针到达末尾时，指向另一个链表的头，最后相遇的地方即为相交点。
+## 代码
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int len_A = 0;
+        int len_B = 0;
+        ListNode current_A = headA;
+        ListNode current_B = headB;
+        while(current_A != null){
+            current_A = current_A.next;
+            len_A++;
+        }
+        while(current_B != null){
+            current_B = current_B.next;
+            len_B++;
+        }
+        current_A = headA;
+        current_B = headB;
+        int distance = len_A - len_B;
+        if(distance < 0){
+            for(int i = 0; i < -distance; i++){
+                current_B = current_B.next;
+            }
+        } else {
+            for(int i = 0; i < distance; i++){
+                current_A = current_A.next;
+            }
+        }
+        while(current_A != current_B){
+            current_A = current_A.next;
+            current_B = current_B.next;
+        }
+        return current_A;
+    }
+}
+```
+## 运行截图
+![alt text](assets/160.png)
+
 # 188. 买卖股票的最佳时机 IV(hard)
 ## 题目描述
 给你一个整数数组 prices 和一个整数 k ，其中 prices[i] 是某支给定的股票在第 i 天的价格。
@@ -933,6 +1071,43 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/188.jpg)
+
+# 203.移除链表元素(easy)
+## 题目描述
+给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回新的头节点 。
+## 分析
+处理头节点为要移除的值的情况，再遍历列表，使用头插法删除节点。
+## 代码
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode removeElements(ListNode head, int val) {
+        while(head != null && head.val == val){
+            head = head.next;
+        }
+        ListNode current = head;
+        while(current != null){
+            if(current.next != null && current.next.val == val){
+                current.next = current.next.next;
+            } else {
+                current = current.next; 
+            }
+        }
+        return head;
+    }
+}
+```
+## 运行截图
+![alt text](assets/203.png)
 
 # 206.反转链表(easy)
 ## 题目描述
