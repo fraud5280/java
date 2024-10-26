@@ -1277,6 +1277,90 @@ class Solution {
 ## 运行截图
 ![alt text](assets/283.jpg)
 
+# 410. 分割数组的最大值(hard)
+## 题目描述
+给定一个非负整数数组 nums 和一个整数 k ，你需要将这个数组分成 k 个非空的连续子数组。
+设计一个算法使得这 k 个子数组各自和的最大值最小。
+## 分析
+使用动态规划，让f[i][j]表示将数组的前 i 个数分割为 j 段所能得到的最大连续子数组和的最小值。状态转移时枚举 k，其中前 k 个数被分割为 j−1 段，而第 k+1 到第 i 个数为第 j 段。此时，这 j 段子数组中和的最大值，就等于 f[k][j−1] 与 sub(k+1,i) 中的较大值，其中 sub(i,j) 表示数组 nums 中下标落在区间 [i,j] 内的数的和。
+## 代码
+```java
+class Solution {
+    public int splitArray(int[] nums, int k) {
+        //也可以用dp，但复杂度很高
+        int n=nums.length;
+        long[][] dp=new long[n+1][k+1];
+        for(int i=0;i<n+1;i++){
+            Arrays.fill(dp[i],Long.MAX_VALUE);
+        }
+        dp[0][0]=0;
+        long[] presum = new long[n+1];
+        presum[0]=0;
+        for(int i=0;i<n;i++){
+            presum[i+1]=presum[i]+nums[i];
+        }
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=Math.min(i,k);j++){
+                for(int p=0;p<i;p++){//要允许k=0，从presum-presum传递
+                    dp[i][j]=Math.min(dp[i][j],Math.max(dp[p][j-1],presum[i]-presum[p]));
+                }
+            }
+        }
+        return (int)dp[n][k];
+    }
+}
+```
+## 运行截图
+![alt text](assets/410.jpg)
+
+# 514. 自由之路(hard)
+## 题目描述
+电子游戏“辐射4”中，任务 “通向自由” 要求玩家到达名为 “Freedom Trail Ring” 的金属表盘，并使用表盘拼写特定关键词才能开门。
+给定一个字符串 ring ，表示刻在外环上的编码；给定另一个字符串 key ，表示需要拼写的关键词。您需要算出能够拼写关键词中所有字符的最少步数。
+最初，ring 的第一个字符与 12:00 方向对齐。您需要顺时针或逆时针旋转 ring 以使 key 的一个字符在 12:00 方向对齐，然后按下中心按钮，以此逐个拼写完 key 中的所有字符。
+旋转 ring 拼出 key 字符 key[i] 的阶段中：
+    您可以将 ring 顺时针或逆时针旋转 一个位置 ，计为1步。旋转的最终目的是将字符串 ring 的一个字符与 12:00 方向对齐，并且这个字符必须等于字符 key[i] 。
+    如果字符 key[i] 已经对齐到12:00方向，您需要按下中心按钮进行拼写，这也将算作 1 步。按完之后，您可以开始拼写 key 的下一个字符（下一阶段）, 直至完成所有拼写。
+## 分析
+动态规划，定义 dp[i][j] 表示从前往后拼写出 key 的第 i 个字符， ring 的第 j 个字符与12点方向对齐的最少步数。利用滚动数组优化第一维的空间复杂度。
+## 代码
+```java
+class Solution {
+    public int findRotateSteps(String ring, String key) {
+        int n=ring.length(),m=key.length();
+        List<Integer>[] pos = new List[26];
+        for (int i = 0; i < 26; ++i) {
+            pos[i] = new ArrayList<Integer>();
+        }
+        for (int i = 0; i < n; ++i) {
+            pos[ring.charAt(i) - 'a'].add(i);
+        }
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; ++i) {
+            Arrays.fill(dp[i], 0x3f3f3f);
+        }
+        for (int i : pos[key.charAt(0) - 'a']) {
+            dp[0][i] = Math.min(i, n - i) + 1;
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j : pos[key.charAt(i) - 'a']) {
+                for (int k : pos[key.charAt(i - 1) - 'a']) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + Math.min(Math.abs(j - k), n - Math.abs(j - k)) + 1);
+                }
+            }
+        }
+        int ans=Integer.MAX_VALUE;
+        for(int i=0;i<dp[m-1].length;i++){
+            ans=Math.min(ans,dp[m-1][i]);
+        }
+        return ans;
+        
+    }
+}
+```
+## 运行截图
+![alt text](assets/514.jpg)
+
 # 560.和为 K 的子数组(mid)
 ## 题目描述
 给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。
@@ -1333,6 +1417,57 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/704.png)
+
+# 741. 摘樱桃(hard)
+## 题目描述
+给你一个 n x n 的网格 grid ，代表一块樱桃地，每个格子由以下三种数字的一种来表示：
+    0 表示这个格子是空的，所以你可以穿过它。
+    1 表示这个格子里装着一个樱桃，你可以摘到樱桃然后穿过它。
+    -1 表示这个格子里有荆棘，挡着你的路。
+请你统计并返回：在遵守下列规则的情况下，能摘到的最多樱桃数：
+## 分析
+使用三维数组，模拟只能向下或向右走，并且只能穿越有效的格子
+## 代码
+```java
+class Solution {
+    public int cherryPickup(int[][] grid) {
+        int n = grid.length;
+        int[][][] f=new int[n * 2 - 1][n][n];
+        for (int i = 0; i < f.length; i++) {
+            for(int j=0;j<n;j++){
+                Arrays.fill(f[i][j], Integer.MIN_VALUE);
+            }
+            //Arrays.fill(f[i], Integer.MIN_VALUE); // 填充每一行
+        }
+        //Arrays.fill(f,Integer.MIN_VALUE);
+        f[0][0][0] = grid[0][0];
+
+        for(int k=1;k<n*2-1;k++){
+            for(int x1=Math.max(k-n+1,0);x1<=Math.min(k,n-1);x1++){
+                int y1=k-x1;
+                if(grid[x1][y1]==-1)continue;
+                for (int x2 = x1; x2 <= Math.min(k, n - 1); ++x2) {
+                    int y2 = k - x2;
+                    if (grid[x2][y2] == -1)continue;
+                    int res=f[k-1][x1][x2];//两两 4种方向
+                    if(x1>0) res=Math.max(res,f[k-1][x1-1][x2]);
+                    if (x2>0) res = Math.max(res, f[k - 1][x1][x2 - 1]);
+                    if (x1!=0 && x2!=0)res = Math.max(res, f[k - 1][x1 - 1][x2 - 1]);
+                    res+=grid[x1][y1];
+                    if(x1!=x2){
+                        res+=grid[x2][y2];
+                    }
+                    f[k][x1][x2]=res;
+                    
+                }
+            }
+        }
+        return Math.max(f[2*n-2][n-1][n-1],0);
+    }
+}
+```
+## 运行截图
+![alt text](assets/741.png)
 
 # 977.有序数组的平方(easy)
 ## 题目描述
@@ -1424,3 +1559,107 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/994.jpg)
+
+# 1406. 石子游戏 III(hard)
+## 题目描述
+Alice 和 Bob 继续他们的石子游戏。几堆石子 排成一行 ，每堆石子都对应一个得分，由数组 stoneValue 给出。
+Alice 和 Bob 轮流取石子，Alice 总是先开始。在每个玩家的回合中，该玩家可以拿走剩下石子中的的前 1、2 或 3 堆石子 。比赛一直持续到所有石头都被拿走。
+每个玩家的最终得分为他所拿到的每堆石子的对应得分之和。每个玩家的初始分数都是 0 。
+比赛的目标是决出最高分，得分最高的选手将会赢得比赛，比赛也可能会出现平局。
+假设 Alice 和 Bob 都采取 最优策略 。
+如果 Alice 赢了就返回 "Alice" ，Bob 赢了就返回 "Bob"，分数相同返回 "Tie" 。
+## 分析
+假设 Alice 和 Bob 都采取 最优策略 。要反向考虑，dpi表示站在第i个进行选择能够得到的最大(i-n，不包含i之前的！！)。但先手一定会选择让后手得分最少的策略,先手必然让后手面临三种局面中得分最少的局面。
+## 代码
+```java
+class Solution {
+    public String stoneGameIII(int[] stoneValue) {
+        int[] dp=new int[50003];
+        int n=stoneValue.length;
+        for(int i=0;i<n;i++)dp[i]=Integer.MIN_VALUE;
+        int sum=0;
+        for(int i=n-1;i>=0;i--){
+            sum+=stoneValue[i];
+            for(int j=1;j<=3;j++){
+                dp[i]=Math.max(dp[i],-dp[i+j]+sum);//可能是负的 指数组的值
+            }
+        }
+        if(sum==2*dp[0])return "Tie";
+        else if(sum>2*dp[0])return "Bob";
+        else return "Alice";
+    }
+}
+```
+## 运行截图
+![alt text](assets/1406.jpg)
+
+# 3008. 找出数组中的美丽下标 II(hard)
+## 题目描述
+给你一个下标从 0 开始的字符串 s 、字符串 a 、字符串 b 和一个整数 k 。
+如果下标 i 满足以下条件，则认为它是一个 美丽下标 ：
+    0 <= i <= s.length - a.length
+    s[i..(i + a.length - 1)] == a
+    存在下标 j 使得：
+        0 <= j <= s.length - b.length
+        s[j..(j + b.length - 1)] == b
+        |j - i| <= k
+以数组形式按 从小到大排序 返回美丽下标。
+## 分析
+使用二分查找+kmp算法
+## 代码
+```java
+class Solution {
+    public List<Integer> beautifulIndices(String s, String a, String b, int k) {
+        char[] t = s.toCharArray();
+        List<Integer> arr1=kmp(t,a.toCharArray());
+        List<Integer> arr2=kmp(t,b.toCharArray());
+        List<Integer> ans = new ArrayList<>();
+
+        int j=0,m=arr2.size();
+        for(int i:arr1){
+            while(j<m&&arr2.get(j)<i-k){
+                j++;
+            }
+            if(j<m&&arr2.get(j)<=i+k){
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+    private List<Integer> kmp(char[] text, char[] pattern){
+        int m=pattern.length;
+        int[] pi = new int[m];//next;
+        int j=0;
+        pi[0]=0;
+        for(int i=1;i<m;i++){
+            while(j>0&&pattern[j]!=pattern[i]){
+                j=pi[j-1];
+            }
+            if(pattern[j]==pattern[i]){
+                j++;
+            }
+            pi[i]=j;//每一步都赋值
+        }
+
+        List<Integer> res = new ArrayList<>();
+        j=0;
+        for(int i=0;i<text.length;i++){
+            while(j>0&&pattern[j]!=text[i]){
+                j=pi[j-1];
+            }
+            if(pattern[j]==text[i]){
+                j++;
+            }
+            //赋值没有了。
+            if(j==m){
+                res.add(i-m+1);
+                j=pi[j-1];//6
+            }
+        }
+        return res;
+    }
+}
+```
+## 运行截图
+![alt text](assets/3008.jpg)
