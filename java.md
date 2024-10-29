@@ -1,3 +1,9 @@
+杨益钊 SA24225414
+
+徐浩杰 SA24225390
+
+徐乔 SA24225393
+
 # 7.整数反转(mid)
 ## 题目描述
 给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果。
@@ -43,6 +49,51 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/3.jpg)
+
+# 10. 正则表达式匹配(hard)
+## 题目描述
+给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+## 分析
+动态规划，dp[i][j]表示s的前i个字符和p的前j个字符是否匹配。
+## 代码
+```java
+class Solution {
+    public boolean isMatch(String s, String p) {
+        int m = s.length();
+        int n = p.length();
+
+        boolean[][] f = new boolean[m + 1][n + 1];
+        f[0][0] = true;
+        for (int i = 0; i <= m; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                if (p.charAt(j - 1) == '*') {
+                    f[i][j] = f[i][j - 2];
+                    if (matches(s, p, i, j - 1)) {
+                        f[i][j] = f[i][j] || f[i - 1][j];
+                    }
+                } else {
+                    if (matches(s, p, i, j)) {
+                        f[i][j] = f[i - 1][j - 1];
+                    }
+                }
+            }
+        }
+        return f[m][n];
+    }
+
+    public boolean matches(String s, String p, int i, int j) {
+        if (i == 0) {
+            return false;
+        }
+        if (p.charAt(j - 1) == '.') {
+            return true;
+        }
+        return s.charAt(i - 1) == p.charAt(j - 1);
+    }
+}
+```
+## 运行截图
+![alt text](assets/10.png)
 
 # 11.盛最多水的容器(mid)
 ## 题目描述
@@ -930,6 +981,50 @@ class Solution {
 ## 运行截图
 ![alt text](assets/135.jpg)
 
+# 140. 单词拆分 II(hard)
+## 题目描述
+给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，为 s 添加空格，构成一个句子，使句子中的每个单词都是字典中的单词。返回所有这些可能的句子。
+## 分析
+动态规划，先判断是否可以拆分，再进行拆分。
+## 代码
+```java
+class Solution {
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        Map<Integer, List<List<String>>> map = new HashMap<Integer, List<List<String>>>();
+        List<List<String>> wordBreaks = backtrack(s, s.length(), new HashSet<String>(wordDict), 0, map);
+        List<String> breakList = new LinkedList<String>();
+        for (List<String> wordBreak : wordBreaks) {
+            breakList.add(String.join(" ", wordBreak));
+        }
+        return breakList;
+    }
+
+    public List<List<String>> backtrack(String s, int length, Set<String> wordSet, int index, Map<Integer, List<List<String>>> map) {
+        if (!map.containsKey(index)) {
+            List<List<String>> wordBreaks = new LinkedList<List<String>>();
+            if (index == length) {
+                wordBreaks.add(new LinkedList<String>());
+            }
+            for (int i = index + 1; i <= length; i++) {
+                String word = s.substring(index, i);
+                if (wordSet.contains(word)) {
+                    List<List<String>> nextWordBreaks = backtrack(s, length, wordSet, i, map);
+                    for (List<String> nextWordBreak : nextWordBreaks) {
+                        LinkedList<String> wordBreak = new LinkedList<String>(nextWordBreak);
+                        wordBreak.offerFirst(word);
+                        wordBreaks.add(wordBreak);
+                    }
+                }
+            }
+            map.put(index, wordBreaks);
+        }
+        return map.get(index);
+    }
+}
+```
+## 运行截图
+![alt text](assets/140.png)
+
 # 141. 环形链表(easy)
 ## 题目描述
 给你一个链表的头节点 head ，判断链表中是否有环。
@@ -957,6 +1052,39 @@ public class Solution {
 ```
 ## 运行截图
 ![alt text](assets/141.jpg)
+
+# 149. 直线上最多的点数(hard)
+## 题目描述
+给你一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点。求最多有多少个点在同一条直线上。
+## 分析
+枚举每一个点，计算与其他点的斜率，使用哈希表存储斜率，最后找到最大值。
+## 代码
+```java
+class Solution {
+    public int maxPoints(int[][] points) {
+        int n = points.length, ans = 1;
+        for (int i = 0; i < n; i++) {
+            int[] x = points[i];
+            for (int j = i + 1; j < n; j++) {
+                int[] y = points[j];
+                // 枚举点对 (i,j) 并统计有多少点在该线上, 起始 cnt = 2 代表只有 i 和 j 两个点在此线上
+                int cnt = 2;
+                for (int k = j + 1; k < n; k++) {
+                    int[] p = points[k];
+                    int s1 = (y[1] - x[1]) * (p[0] - y[0]);
+                    int s2 = (p[1] - y[1]) * (y[0] - x[0]);
+                    if (s1 == s2) cnt++;
+                }
+                ans = Math.max(ans, cnt);
+            }
+        }
+        return ans;
+    }
+}
+
+```
+## 运行截图
+![alt text](assets/149.png)
 
 # 154. 寻找旋转排序数组中的最小值 II(hard)
 ## 题目描述
@@ -1071,6 +1199,37 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/188.jpg)
+
+# 202. 快乐数(easy)
+## 题目描述
+编写一个算法来判断一个数 n 是不是快乐数。
+## 分析
+使用哈希法，来判断这个sum是否重复出现，如果重复了就是return false， 否则一直找到sum为1为止。
+## 代码
+```java
+class Solution {
+    public boolean isHappy(int n) {
+        Set<Integer> record = new HashSet<>();
+        while (n != 1 && !record.contains(n)) {
+            record.add(n);
+            n = getNextNumber(n);
+        }
+        return n == 1;
+    }
+
+    private int getNextNumber(int n) {
+        int res = 0;
+        while (n > 0) {
+            int temp = n % 10;
+            res += temp * temp;
+            n = n / 10;
+        }
+        return res;
+    }
+}
+```
+## 运行截图
+![alt text](assets/202.png)
 
 # 203.移除链表元素(easy)
 ## 题目描述
@@ -1248,6 +1407,31 @@ class Solution {
 ## 运行截图
 ![alt text](assets/239.jpg)
 
+# 242. 有效的字母异位词(easy)
+## 题目描述
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+## 分析
+使用哈希表存储每个字符出现的次数，比较两个哈希表是否相同。
+## 代码
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s.length() != t.length())return false;
+        int[] alpha = new int[26];
+        for(int i = 0; i < s.length(); i++){
+            alpha[s.charAt(i) - 'a']++;
+            alpha[t.charAt(i) - 'a']--;
+        }
+        for(int i = 0; i < 26; i++){
+            if(alpha[i] != 0)return false;
+        }
+        return true;
+    }
+}
+```
+## 运行截图
+![alt text](assets/242.png)
+
 # 283.移动零(easy)
 ## 题目描述
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
@@ -1276,6 +1460,81 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/283.jpg)
+
+# 349. 两个数组的交集(easy)
+## 题目描述
+给定两个数组，编写一个函数来计算它们的交集。
+## 分析
+使用哈希表存储一个数组，遍历另一个数组，如果存在则加入结果集。
+## 代码
+```java
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set1 = new HashSet<Integer>();
+        Set<Integer> set2 = new HashSet<Integer>();
+        for(int num : nums1){
+            set1.add(num);
+        }
+        for(int num : nums2){
+            set2.add(num);
+        }
+        return getIntersection(set1, set2);
+    }
+    public int[] getIntersection(Set<Integer> set1, Set<Integer> set2) {
+        if (set1.size() > set2.size()) {
+            return getIntersection(set2, set1);
+        }
+        Set<Integer> intersectionSet = new HashSet<Integer>();
+        for (int num : set1) {
+            if (set2.contains(num)) {
+                intersectionSet.add(num);
+            }
+        }
+        int[] intersection = new int[intersectionSet.size()];
+        int index = 0;
+        for (int num : intersectionSet) {
+            intersection[index++] = num;
+        }
+        return intersection;
+    }
+}
+```
+## 运行截图
+![alt text](assets/349.png)
+
+# 383. 赎金信(easy)
+## 题目描述
+给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串ransom能不能由第二个字符串magazines里面的字符构成。如果可以构成，返回 true ；否则返回 false。
+## 分析
+使用哈希表存储magazine中的字符，遍历ransom，如果存在则减一，否则返回false。
+## 代码
+```java
+class Solution {
+    public boolean canConstruct(String ransomNote, String magazine) {
+        // shortcut
+        if (ransomNote.length() > magazine.length()) {
+            return false;
+        }
+        int[] record = new int[26];
+        // 遍历
+        for(char c : magazine.toCharArray()){
+            record[c - 'a'] += 1;
+        }
+        for(char c : ransomNote.toCharArray()){
+            record[c - 'a'] -= 1;
+        }
+        // 如果数组中存在负数，说明ransomNote字符串中存在magazine中没有的字符
+        for(int i : record){
+            if(i < 0){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+## 运行截图
+![alt text](assets/383.png)
 
 # 410. 分割数组的最大值(hard)
 ## 题目描述
@@ -1312,6 +1571,37 @@ class Solution {
 ```
 ## 运行截图
 ![alt text](assets/410.jpg)
+
+# 454. 四数相加 II(mid)
+## 题目描述
+给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+## 分析
+使用哈希表存储A和B的和，遍历C和D的和，如果存在则加入结果集。
+## 代码
+```java
+class Solution {
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        int res = 0;
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        //统计两个数组中的元素之和，同时统计出现的次数，放入map
+        for (int i : nums1) {
+            for (int j : nums2) {
+                int sum = i + j;
+                map.put(sum, map.getOrDefault(sum, 0) + 1);
+            }
+        }
+        //统计剩余的两个元素的和，在map中找是否存在相加为0的情况，同时记录次数
+        for (int i : nums3) {
+            for (int j : nums4) {
+                res += map.getOrDefault(0 - i - j, 0);
+            }
+        }
+        return res;
+    }
+}
+```
+## 运行截图
+![alt text](assets/454.png)
 
 # 514. 自由之路(hard)
 ## 题目描述
